@@ -60,6 +60,3 @@ else
 endif
 
 .PHONY: all clean run
-
-#https://www.embarcados.com.br/introducao-ao-makefile/
-#https://makefiletutorial.com/

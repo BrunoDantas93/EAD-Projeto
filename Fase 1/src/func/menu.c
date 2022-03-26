@@ -1,3 +1,16 @@
+/**
+ * @file menu.c
+ * @author Bruno Dantas (a20807@alunos.ipca.pt)
+ * @brief The page will all outputs of the program
+ * @version 1
+ * @date 2022-03-14
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ * Contains all menus and list data display.
+ * 
+ * 
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -6,6 +19,11 @@
 #include "../lib/mainf.h"
 #include "../lib/menu.h"
 
+/**
+ * @brief This is main menu to navegate to the functions of the program
+ * 
+ * @return int 
+ */
 int Menu()
 {
     int choice = -1;
@@ -27,6 +45,11 @@ int Menu()
     return choice;
 }
 
+/**
+ * @brief This is the menu to display all the messages to the user
+ * 
+ * @param msg 
+ */
 void DisplayMessage(char *msg)
 {
     printf("\n\t\t+-----------------------------------------------------------------------------------+");
@@ -34,6 +57,10 @@ void DisplayMessage(char *msg)
     printf("\n\t\t+-----------------------------------------------------------------------------------+\n");
 }
 
+/**
+ * @brief This menu gives when using the option to continue in the program or if you want to exit
+ * 
+ */
 void ReturnMenu()
 {
     printf("\n\t\t+-----------------------------------------------------------------------------------+");
@@ -53,6 +80,12 @@ void ReturnMenu()
     }
 }
 
+/**
+ * @brief This is a menu to ask the user if he wants to continue adding sub-operations or if he wants to stop
+ * 
+ * @return true 
+ * @return false 
+ */
 bool ChoiceMenu()
 {
     printf("\n\t\t+-----------------------------------------------------------------------------------+");
@@ -72,6 +105,14 @@ bool ChoiceMenu()
     { return true; }
 }
 
+/**
+ * @brief Shows the user all the operations and gives him the option to choose the operation to use in the rest of the functions
+ * 
+ * @param lst list with all the data
+ * @param msg Contains the message to show the user
+ * @param errMsg Contains the error message to show the user
+ * @return int 
+ */
 int DisplayOperations(Operations *lst, char *msg, char *errMsg)
 {
     OperationsLst *ptr = lst->first;
@@ -102,6 +143,11 @@ int DisplayOperations(Operations *lst, char *msg, char *errMsg)
     return element;
 }
 
+/**
+ * @brief Sow all the sub-operations
+ * 
+ * @param lst list with all the data
+ */
 void DistplaySubOperations(OperationsLst *lst)
 {
     SubOperations *ptr = lst->first;
@@ -111,6 +157,14 @@ void DistplaySubOperations(OperationsLst *lst)
     }
 }
 
+/**
+ * @brief Shows the user all the Sub-operations and gives him the option to choose the sub-operation to use in the rest of the functions
+ * 
+ * @param lst list with all the data
+ * @param msg Contains the message to show the user
+ * @param errMsg Contains the error message to show the user
+ * @return int 
+ */
 SubOperations *DisplaySubOperationsChoice(OperationsLst *lst, char *msg, char *errMsg)
 {
     SubOperations *ptr = lst->first;
@@ -147,6 +201,11 @@ SubOperations *DisplaySubOperationsChoice(OperationsLst *lst, char *msg, char *e
     return sch;  
 }
 
+/**
+ * @brief Show the user all the options they have to be able to change a suboption
+ * 
+ * @return int 
+ */
 int SubOperationsChoice()
 {
     printf("\n\t\t+-----------------------------------------------------------------------------------+");
@@ -163,6 +222,11 @@ int SubOperationsChoice()
     return value;
 }
 
+/**
+ * @brief Show the fastest operations to complete at work
+ * 
+ * @param lst 
+ */
 void ShowFirst(Operations *lst)
 {
     OperationsLst *ptr = lst->first;
@@ -173,6 +237,12 @@ void ShowFirst(Operations *lst)
     }
 
 }
+
+/**
+ * @brief Show the slowest operations to complet on job
+ * 
+ * @param lst 
+ */
 void ShowLast(Operations *lst)
 {
     OperationsLst *ptr = lst->first;

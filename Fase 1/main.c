@@ -1,3 +1,16 @@
+/**
+ * @file main.c
+ * @author Bruno Dantas (a20807@alunos.ipca.pt)
+ * @brief This is the main file of the project
+ * @version 1
+ * @date 2022-03-14
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ * \mainpage Description
+ * 
+ * 
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -9,15 +22,19 @@
 #include "src/lib/mainf.h"
 #include "src/lib/files.h"
 
+/**
+ * @brief This is the main function
+ * 
+ * @return int 
+ */
 int main()
-{
-	  
-    UINT CPAGE_UTF8 = 65001;
+{	  
+    UINT CPAGE_UTF8 = 65001; 
     UINT CPAGE_DEFAULT = GetConsoleOutputCP();
     SetConsoleOutputCP(CPAGE_UTF8);
 	
-    InitializeComponent();
+    InitializeComponent(); 
 
-    SetConsoleOutputCP(CPAGE_DEFAULT);
-	
+    SetConsoleOutputCP(CPAGE_DEFAULT);	
+    return 0;
 }

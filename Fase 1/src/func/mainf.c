@@ -1,12 +1,32 @@
+/**
+ * @file mainf.c
+ * @author Bruno Dantas (a20807@alunos.ipca.pt)
+ * @brief This file will contain all the main functions of the program.
+ * @version 0.1
+ * @date 2022-03-14
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ * 
+ * 
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
 #include "../lib/jobs.h"
 #include "../lib/mainf.h"
 #include "../lib/menu.h"
 #include "../lib/files.h"
 
+/**
+ * @brief This function is an evaluator of users inputs that only accepts inputs of type integer, also content custom message and error message
+ * This functions 
+ * @param msg Message to display the user about some element of type integer
+ * @param msgErr Error message to show the user if the element inserted was not valid
+ * @return int 
+ */
 int readInt(char *msg, char *msgErr)
 {
     int valueInt;
@@ -20,6 +40,13 @@ int readInt(char *msg, char *msgErr)
     return valueInt;  
 }
 
+/**
+ * @brief This function is an evaluator of users inputs that only accepts inputs of type integer, also content custom message and error message
+ * This functions 
+ * @param msg Message to display the user about some element of type integer
+ * @param msgErr Error message to show the user if the element inserted was not valid
+ * @return int 
+ */
 char *readString(const char *msg, const char *msgErr)
 {
     fflush(stdin);
@@ -34,6 +61,11 @@ char *readString(const char *msg, const char *msgErr)
     return strdup(ValueString);  
 }
 
+/**
+ * @brief This is the core function of the entire program.
+ * And in this function where the pointers to the list of jobs and messages will be initialized
+ * As it will also have an infinite loop of the menu to continue in the program when it finishes executing a function 
+ */
 void InitializeComponent()
 {
     Message *msg = (Message *)malloc(sizeof(Message));
@@ -106,8 +138,17 @@ void InitializeComponent()
     }while(disable == false);
 }
 
+/**
+ * @brief In this function the program to be displayed to the user in the option of reading or writing in a file and the option of choosing the name of the file.
+ * 
+ * @param lst List to import/export all data to file or form a file
+ * @param msg Variable to display the response menssage to the users
+ * @param type Determines whether it is the read or save function
+ * @return Operations* 
+ */
 Operations *FilesInterpreter(Operations *lst, Message *msg, int type)
 {
+    time_t elapsed = 1110;
     DisplayMessage("Para o ficheiros serem encontrados                                                | \n\t\t| tem que estar neste directorio [src/data/nomeficheiro.txt]                        |");
     char *filename = readString("\n\t\tQual é o nome do ficheiro.txt: ","\n\t\t[ERROR] Qual é o nome do ficheiro.txt: ");
     char str[100];
@@ -115,9 +156,14 @@ Operations *FilesInterpreter(Operations *lst, Message *msg, int type)
     switch (type)
     {
         case 1:;
+            time_t begin, end;
+            time(&begin);
             //free(lst);
             sprintf (str, "src/data/%s.txt", filename);
             lst = filesRead(lst, msg, str);
+                    
+            time(&end);
+            elapsed = end - begin;
             break;
 
         case 2:;
@@ -129,10 +175,13 @@ Operations *FilesInterpreter(Operations *lst, Message *msg, int type)
     if(msg->type == false)
     {
         DisplayMessage(strcat(msg->message, " |"));
+        ReturnMenu();
     }
     else
     {
-        DisplayMessage(strcat(msg->message, " |"));
+        char str[100]; 
+        sprintf(str, "%s \n\t\t| Tempo medido: %ld segundos. |", msg->message, elapsed);
+        DisplayMessage(str);
         ReturnMenu();
     }
 
@@ -140,6 +189,13 @@ Operations *FilesInterpreter(Operations *lst, Message *msg, int type)
     return lst;
 }
 
+/**
+ * @brief Insert new operations and sub-operations in the list
+ * 
+ * @param lst list with all the data 
+ * @param msg Variable to display the response menssage to the users
+ * @return Operations* 
+ */
 Operations *InsertOp(Operations *lst, Message *msg)
 {
     DisplayMessage("Inserir um nova Operação e novas Sub-Operações");
@@ -208,6 +264,13 @@ Operations *InsertOp(Operations *lst, Message *msg)
     return lst;
 }
 
+/**
+ * @brief This operation gives the user the option to delete an entire job from the list
+ * 
+ * @param lst list with all the data 
+ * @param msg Variable to display the response menssage to the users
+ * @return Operations* 
+ */
 Operations *DeleteOperation(Operations *lst, Message *msg)
 {
     DisplayMessage("Escolha o número de operação que pertende apagar.");
@@ -229,6 +292,13 @@ Operations *DeleteOperation(Operations *lst, Message *msg)
     return lst;
 }
 
+/**
+ * @brief This operation gives the user the option to change a given data of an operation
+ * 
+ * @param lst list with all the data 
+ * @param msg Variable to display the response menssage to the users
+ * @return Operations* 
+ */
 Operations *ChangeOperation(Operations *lst, Message *msg)
 {
     DisplayMessage("Escolha o número de operação que pertende alterar.");

@@ -1,3 +1,13 @@
+/**
+ * @file jobs.c
+ * @author Bruno Dantas (a20807@alunos.ipca.pt)
+ * @brief This file will contain all the main functions of the program.
+ * @version 0.1
+ * @date 2022-03-14
+ * 
+ * @copyright Copyright (c) 2022
+ *  
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -6,7 +16,12 @@
 #include "../lib/menu.h"
 #include "../lib/mainf.h"
 
-
+/**
+ * @brief
+ * 
+ * @param msg variable for the message type and its corresponding messages
+ * @return Operations* 
+ */
 Operations *newOperation(Message *msg)
 {
     Operations *new = (Operations *)malloc(sizeof(Operations));
@@ -20,6 +35,14 @@ Operations *newOperation(Message *msg)
     return new;
 }
 
+/**
+ * @brief This function looks for the position to insert the new operation identifier in the list in order from smallest to largest
+ * 
+ * @param lst list where we will store the data
+ * @param msg variable for the message type and its corresponding messages
+ * @param numOperations operation identifier
+ * @return Operations* 
+ */
 Operations *Operations_List(Operations *lst, Message *msg, int numOperations)
 {
     
@@ -62,6 +85,14 @@ Operations *Operations_List(Operations *lst, Message *msg, int numOperations)
     return lst;
 }
 
+/**
+ * @brief This function inserts new operation identifiers.
+ * 
+ * @param lst list where we will store the data
+ * @param msg variable for the message type and its corresponding messages
+ * @param numOperations operation identifier
+ * @return OperationsLst* 
+ */
 OperationsLst *insertOperation(OperationsLst *lst, Message *msg, int numOperations)
 {
     OperationsLst *cell = (OperationsLst *)malloc(sizeof(OperationsLst));
@@ -84,6 +115,16 @@ OperationsLst *insertOperation(OperationsLst *lst, Message *msg, int numOperatio
     return cell;
 }
 
+/**
+ * @brief This function looks for the position that has the same operation identifier to insert new alternatives to perform the operation with different machines and times.
+ * 
+ * @param lst list where we will store the data
+ * @param msg variable for the message type and its corresponding messages
+ * @param numOperations operation identifier
+ * @param numMachine machine identifier
+ * @param time time to complete the operation
+ * @return Operations* 
+ */
 Operations *CheckOperations(Operations *lst, Message *msg, int numOperation, int numMachine, int time)
 {
    if(lst->first->numOperation == numOperation)
@@ -117,6 +158,16 @@ Operations *CheckOperations(Operations *lst, Message *msg, int numOperation, int
    return lst;
 }
 
+/**
+ * @brief This function looks for the position to insert the new alternatives in the list in order 
+ * from shortest time to longest time to complete the operation
+ * 
+ * @param lst list where we will store the data
+ * @param msg variable for the message type and its corresponding messages
+ * @param numMachine machine identifier
+ * @param time time to complete the operation
+ * @return OperationsLst* 
+ */
 OperationsLst *InsertSubOperation(OperationsLst *lst, Message *msg, int numMachine, int time)
 {   
    if(!lst->last)
@@ -155,7 +206,15 @@ OperationsLst *InsertSubOperation(OperationsLst *lst, Message *msg, int numMachi
    return lst;
 }
 
-
+/**
+ * @brief Insert the new alternatives in the list
+ * 
+ * @param lst list where we will store the data
+ * @param msg variable for the message type and its corresponding messages
+ * @param numMachine machine identifier
+ * @param time time to complete the operation
+ * @return OperationsLst* 
+ */
 SubOperations *addSubOperations(SubOperations *lst, Message *msg, int numMachine, int time)
 {       
     SubOperations *cell = (SubOperations *)malloc(sizeof(SubOperations));
@@ -177,7 +236,14 @@ SubOperations *addSubOperations(SubOperations *lst, Message *msg, int numMachine
     return cell;
 }
 
-
+/**
+ * @brief Remove  element from the list
+ * 
+ * @param lst list where we will store the data
+ * @param msg variable for the message type and its corresponding messages
+ * @param element Element to be removed from the list
+ * @return Operations* 
+ */
 Operations *OperationsRemove(Operations *lst, Message *msg, int element)
 {
     if(lst->first->numOperation == element)
@@ -216,6 +282,12 @@ Operations *OperationsRemove(Operations *lst, Message *msg, int element)
     return lst;
 }
 
+/**
+ * @brief Remove the element that was changed to be able to sort the list in an orderly way
+ * 
+ * @param ptr list where we will store the data 
+ * @return Operations* 
+ */
 Operations *RearrangeElements(Operations *ptr)
 {
     OperationsLst *lst = ptr->first;
@@ -251,7 +323,12 @@ Operations *RearrangeElements(Operations *ptr)
     return ptr;
 }
 
-
+/**
+ * @brief Determines the minimum amount of time units needed to complete the job
+ * 
+ * @param lst list where we will store the data
+ * @param msg variable for the message type and its corresponding messages
+ */
 void MinimumTimeUnits(Operations *lst, Message *msg)
 {
     OperationsLst *ptr = lst->first;
@@ -262,7 +339,7 @@ void MinimumTimeUnits(Operations *lst, Message *msg)
         msg->type = true;
         char str[80];
         sprintf(str, "O tempo minimo possível é: %d", TotalTime);
-        
+        strcpy(msg->message, str);
     }
     else
     {
@@ -270,6 +347,12 @@ void MinimumTimeUnits(Operations *lst, Message *msg)
     }
 }
 
+/**
+ * @brief Determines maximum amount of time units needed to complete the job
+ * 
+ * @param lst list where we will store the data
+ * @param msg variable for the message type and its corresponding messages
+ */
 void MaximumTimeUnits(Operations *lst, Message *msg)
 {
     OperationsLst *ptr = lst->first;
@@ -288,6 +371,12 @@ void MaximumTimeUnits(Operations *lst, Message *msg)
     }
 }
 
+/**
+ * @brief Determines the average amount of time units required to complete an operation,
+ * 
+ * @param lst list where we will store the data
+ * @param msg variable for the message type and its corresponding messages
+ */
 void AverageTimeUnits(Operations *lst, Message *msg)
 {
     OperationsLst *ptr = lst->first;
