@@ -73,6 +73,8 @@ ProcessPlan *insert_list(ProcessPlan *lst, Message *msg, int processplanID)
     }
     cell->ProcessPlanID = processplanID;
     cell->next = lst;
+    cell->first = NULL;
+    cell->last = NULL;
     return cell;
 }
 

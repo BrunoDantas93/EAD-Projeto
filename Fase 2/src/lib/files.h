@@ -34,7 +34,7 @@ void HashSize(Message *msg, char *filename);
  * @param filename name of the file that contains the data
  * @return Operations* 
  */
-//Operations *filesRead(Operations *lst, Message *msg, char *filename);
+int filesRead(ProcessPlan **Hash, Message *msg, char *filename);
 
 /**
  * @brief Function to write the data from the list.

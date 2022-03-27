@@ -19,6 +19,7 @@ typedef struct _ProcessPlan
 {
     int ProcessPlanID;  /** Number: plan process identifier  */
     struct _ProcessPlan *next; /** Next process plan */
+    struct _OperationsLst *first, *last;
     
 }ProcessPlan;
 
@@ -29,12 +30,9 @@ typedef struct _ProcessPlan
 typedef struct _Message
 {  
     bool type; /** MessageType: Message type success or error */
-    int M; /** Hash length */
+    int M, S; /** Hash length */
     char message[1000]; /** Message: Contains the message to present to the user*/
 }Message;
-
-
-
 
 
 /**

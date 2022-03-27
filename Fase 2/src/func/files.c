@@ -18,6 +18,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include "../lib/processplan.h"
+#include "../lib/jobs.h"
 
 /**
  * @brief loops through the file to see how many process plans there are 
@@ -115,6 +116,7 @@ int HashSize(Message *msg, char *filename)
 
     fclose(file);
     msg->type = true;
+    msg->S = lines;
     msg->M = size;
     return 0;
 }
@@ -122,12 +124,12 @@ int HashSize(Message *msg, char *filename)
 /**
  * @brief Function to read the data from a file.
  * 
- * @param lst list where we will store the data
+ * @param Hash list where we will store the data
  * @param msg variable for the message type and its corresponding messages
  * @param filename name of the file that contains the data
  * @return Operations* 
- *//*
-Operations *filesRead(Operations *lst, Message *msg, char *filename)
+ */
+int filesRead(ProcessPlan **Hash, Message *msg, char *filename)
 {
     FILE *file;
     file = fopen(filename, "r");
@@ -138,7 +140,7 @@ Operations *filesRead(Operations *lst, Message *msg, char *filename)
         char str[1000];
         sprintf (str, "O ficheiro [%s] não existe.", filename);
         strcpy(msg->message, str);
-        return NULL;
+        return 0;
     }
 
     fseek(file, 0, SEEK_END);
@@ -150,32 +152,63 @@ Operations *filesRead(Operations *lst, Message *msg, char *filename)
         char str[1000];
         sprintf (str, "O ficheiro [%s] não tem dados.", filename);
         strcpy(msg->message, str);
-        return NULL;
+        return 0;
     }
 
     fseek(file, 0, SEEK_SET);
 
+    int processplanArr[msg->S];
+    int lines = 0;
+
+
     while (!feof(file)) 
     {
         char string[1000];
-    	int numOperation, numMachine,time;
+    	int processplanID,numOperation, numMachine, time;
 	    fgets(string, 1000, file);
-		sscanf(string, "%d,%d,%d", &numOperation, &numMachine, &time);        
+        sscanf(string, "%d,%d,%d,%d", &processplanID, &numOperation, &numMachine, &time); 
         
-        lst = Operations_List(lst, msg, numOperation);
-        lst = CheckOperations(lst, msg, numOperation, numMachine, time);
+        if(lines == 0)
+        {
+            processplanArr[lines] = processplanID;
+            lines++;
+            insert_hash(Hash, msg, processplanID);  
+        }
+        else
+        {
+            bool found = false;
+            for (int i = 0; i < lines; i++)
+            {
+                if(processplanID == processplanArr[i])
+                {
+                    found = true;
+                }
+            }
+             
+            if(found == false)
+            {    
+                insert_hash(Hash, msg, processplanID); 
+                processplanArr[lines] = processplanID;
+                lines++;
+            } 
+
+        }
+        ProcessPlan *lst = exists_in_hash(Hash, msg, processplanID);
+        
+        Operations_List(lst, msg, numOperation);
+        CheckOperations(lst, msg, numOperation, numMachine, time);
         
         if(msg->type == false)
         {
-            return NULL;
+            return 0;
         }
 	}
     
     fclose(file);
     msg->type = true;
     strcpy(msg->message, "Dado lidos com sucesso.         |");
-    return lst;
-}*/
+    return 0;
+}
 
 
 /**
@@ -217,7 +250,7 @@ int filesWrite(Operations *lst, Message *msg, char *filename)
         SubOperations *ptr2 = ptr->first;
         while (ptr2) 
         {
-            fprintf(file,"%d,%d,%d\n",ptr->numOperation, ptr2->numMachine, ptr2->time);
+            fprintf(file,"%d,%d,%d,%d\n",ptr->numOperation, ptr2->numMachine, ptr2->time);
             ptr2 = ptr2->next;
         }
 	    ptr = ptr->next;
