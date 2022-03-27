@@ -4,7 +4,7 @@
 #include <time.h>
 #include <stdbool.h>
 #include <string.h>
-#define M 20200
+#define M 10000000
 
 typedef struct _ProcessPlan
 {
@@ -26,6 +26,7 @@ int MagicNumber(const char* str)
     return abs(hash % M);
 }
 
+//! LIXO
 char *random_name() {
     int len = 5 + rand() % 10;
     char *name = malloc( len + 1);
@@ -44,18 +45,19 @@ int length(ProcessPlan *lst) {
     return i;
 }
 
+//* NOT IMPORTANT BUT Useful 
 void stats(ProcessPlan **hash) {
-    int max, tot, min = length(*hash);
-    max = tot = min;
-
+    int max = 0, min = length(*hash), tot = 0;
+    
     for (int i = 1; i < M; i++ ) {
         int l = length(*(hash+i));
-        if (l > max) max = l;
+        if (l > max) max = l; 
         if (l < min) min = l;
-        tot += l;
+        if(l > 0) tot++;
     }
     printf("Hash: %d Total: %d Min: %d Max: %d Med: %.2f\n", M, tot, min, max, (float)tot / M);
 }
+
 
 ProcessPlan *insert_list(ProcessPlan* lst, int v) {
     ProcessPlan *cell = malloc(sizeof(ProcessPlan));
@@ -65,7 +67,7 @@ ProcessPlan *insert_list(ProcessPlan* lst, int v) {
     return cell;
 }
 
-
+//Prepara o hash para o ID
 void insert_hash(ProcessPlan **hash, int v) {
     char c[100];
     sprintf (c, "%dProcessPlan", v);
@@ -75,9 +77,22 @@ void insert_hash(ProcessPlan **hash, int v) {
 
 bool exists_in_list(ProcessPlan *lst, int v) {
     bool found = false;
-    for ( ; lst && !found ; lst = lst->next) {
-        if (lst->ProcessPlanID == v) found = true;
+    while(lst)
+    {
+        if (lst->ProcessPlanID == v)
+        { 
+            found = true; 
+            break;
+        }
+        lst = lst->next;
     }
+    /*for ( ; lst && !found ; lst = lst->next) {
+        if (lst->ProcessPlanID == v)
+        { 
+            found = true; break;
+        }
+    }*/
+    printf("%d = %d", v, lst->ProcessPlanID);
     return found;
 }
 
@@ -91,8 +106,6 @@ bool exists_in_hash(ProcessPlan **hash, int v) {
 int main(){
     time_t begin, end;
     time(&begin);
-    time(&end);
-    time_t elapsed = end - begin;
     
     ProcessPlan **Hash = calloc(M, sizeof(ProcessPlan*));
     
@@ -112,9 +125,9 @@ int main(){
         
     printf("Time measured: %ld seconds.\n", elapsed);
     
+    
+    system("pause");
     stats(Hash);
-
-
     int a = 20198;
     printf("O valor %d == %s\n", a, exists_in_hash(Hash, a) ? "true" : "false" );
     
