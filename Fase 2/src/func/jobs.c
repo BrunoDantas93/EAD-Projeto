@@ -169,6 +169,7 @@ ProcessPlan *CheckOperations(ProcessPlan *lst, Message *msg, int numOperation, i
  */
 OperationsLst *InsertSubOperation(OperationsLst *lst, Message *msg, int numMachine, int time)
 {   
+   lst->TotalSubOperation++;
    if(!lst->last)
    {
        lst->first = lst->last = addSubOperations(lst->last, msg, numMachine, time);

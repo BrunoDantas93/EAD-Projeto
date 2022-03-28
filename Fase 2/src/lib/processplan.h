@@ -82,4 +82,8 @@ ProcessPlan * exists_in_hash(ProcessPlan **hash, Message *msg, int processplanID
  */
 ProcessPlan * exists_in_list(ProcessPlan *lst, Message *msg, int processplanID);
 
+int hash_remove(ProcessPlan **Hash, Message *msg, int processplanID);
+
+ProcessPlan * ProcessPlan_remove(ProcessPlan *lst, Message *msg, int processplanID);
+
 #endif

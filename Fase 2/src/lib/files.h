@@ -44,6 +44,6 @@ int filesRead(ProcessPlan **Hash, Message *msg, char *filename);
  * @param filename name of the file where will save the data 
  * @return int 
  */
-//int filesWrite(Operations *lst, Message *msg, char *filename);
+int filesWrite(ProcessPlan **Hash, Message *msg, char *filename);
 
 #endif

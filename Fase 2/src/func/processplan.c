@@ -50,7 +50,7 @@ void insert_hash(ProcessPlan **hash, Message *msg, int processplanID)
     char c[100];
     sprintf (c, "%d", processplanID);
     int h = MagicNumber(msg, c);
-    *(hash + h) = insert_list(*(hash + h), msg, processplanID);
+    hash[h] = insert_list(hash[h], msg, processplanID);
 }
 
 
@@ -131,5 +131,38 @@ ProcessPlan * exists_in_list(ProcessPlan *lst, Message *msg, int processplanID)
         strcpy(msg->message, c);
         return lst;
     }
+}
+
+ProcessPlan * ProcessPlan_remove(ProcessPlan *lst, Message *msg, int processplanID)
+{
+    if(lst)
+    {
+        if(lst->ProcessPlanID == processplanID)
+        {
+            ProcessPlan *next = lst->next;
+            free(lst);
+            lst = next;
+            msg->type = true;
+            strcpy(msg->message,"Process plan apagado com sucesso");
+        }
+        else
+        {
+            lst->next = ProcessPlan_remove(lst->next, msg, processplanID);
+        }
+    }
+    else
+    {
+        msg->type = false;
+        strcpy(msg->message,"Ocorreu algum erro");
+    }
+    return lst;
+}
+
+int hash_remove(ProcessPlan **Hash, Message *msg, int processplanID)
+{
+    char c[100];
+    sprintf (c, "%d", processplanID);
+    int pos = MagicNumber(msg, c);
+    *(Hash+pos) = ProcessPlan_remove(Hash[pos], msg, processplanID);
 }
 

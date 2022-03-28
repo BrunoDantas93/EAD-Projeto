@@ -31,74 +31,71 @@ int HashSize(Message *msg, char *filename)
 {
     FILE *file;
     file = fopen(filename, "r");
-
-    if(file == NULL)
-    {
-        msg->type = false;        
-        char str[1000];
-        sprintf (str, "O ficheiro [%s] não existe.", filename);
-        strcpy(msg->message, str);
-        return 0;
-    }
-
-    fseek(file, 0, SEEK_END);
-    int size = ftell(file);
-    
-    if(size == 0)
-    {
-        msg->type = false;
-        char str[1000];
-        sprintf (str, "O ficheiro [%s] não tem dados.", filename);
-        strcpy(msg->message, str);
-        return 0;
-    }
-
-    fseek(file, 0, SEEK_SET);
-    
-    int count = 0;
-    
-    while (!feof(file)) 
-    {
-        char string[1000];
-        fgets(string, 1000, file);
-        count++;
-    }
-    
-    int processplanArr[count];
+    int size = 0;
     int lines = 0;
-
-    fseek(file, 0, SEEK_SET);
-
-    while (!feof(file)) 
+    
+    if(file != NULL)
     {
-        char string[1000];
-    	int processplanID;
-	    fgets(string, 1000, file);
-		sscanf(string, "%d", &processplanID);        
-
-        if(lines == 0)
+       
+        fseek(file, 0, SEEK_END);
+        size = ftell(file);
+        
+        if(size == 0)
         {
-            processplanArr[lines] = processplanID;
-            lines++;
+            msg->type = false;
+            char str[1000];
+            sprintf (str, "O ficheiro [%s] não tem dados.", filename);
+            strcpy(msg->message, str);
         }
-        else
+
+        fseek(file, 0, SEEK_SET);
+        
+        int count = 0;
+        
+        while (!feof(file)) 
         {
-            bool found = false;
-            for (int i = 0; i < lines; i++)
-            {
-                if(processplanID == processplanArr[i])
-                {
-                    found = true;
-                }
-            }
-            if(found == false)
+            char string[1000];
+            fgets(string, 1000, file);
+            count++;
+        }
+        
+        int processplanArr[count];
+
+        fseek(file, 0, SEEK_SET);
+
+        while (!feof(file)) 
+        {
+            char string[1000];
+            int processplanID;
+            fgets(string, 1000, file);
+            sscanf(string, "%d", &processplanID);        
+
+            if(lines == 0)
             {
                 processplanArr[lines] = processplanID;
                 lines++;
-            }            
+            }
+            else
+            {
+                bool found = false;
+                for (int i = 0; i < lines; i++)
+                {
+                    if(processplanID == processplanArr[i])
+                    {
+                        found = true;
+                    }
+                }
+                if(found == false)
+                {
+                    processplanArr[lines] = processplanID;
+                    lines++;
+                }            
+            }
         }
-	}
-
+    }
+    
+    if(size == 0) { lines = 1280; }
+    
     size = 0;
     if( lines >= 100)
     {
@@ -218,24 +215,11 @@ int filesRead(ProcessPlan **Hash, Message *msg, char *filename)
  * @param msg variable for the message type and its corresponding messages
  * @param filename name of the file where will save the data 
  * @return int 
- */ /*
-int filesWrite(Operations *lst, Message *msg, char *filename)
+ */ 
+int filesWrite(ProcessPlan **Hash, Message *msg, char *filename)
 {
     FILE *file;
-
-    OperationsLst *ptr = lst->first;
-    
-    if(!ptr)
-    {
-        msg->type = false;
-        char str[1000];
-        sprintf (str, "Não tem dados salvos no sistema.");
-        strcpy(msg->message, str);
-        return 0;
-    }
-
     file = fopen(filename, "w+");
-
     if(file == NULL)
     {
         msg->type = false;
@@ -245,19 +229,33 @@ int filesWrite(Operations *lst, Message *msg, char *filename)
         return 0;
     }
 
-    while (ptr) 
+    for (int i = 0; i < msg->M; i++)
     {
-        SubOperations *ptr2 = ptr->first;
-        while (ptr2) 
-        {
-            fprintf(file,"%d,%d,%d,%d\n",ptr->numOperation, ptr2->numMachine, ptr2->time);
-            ptr2 = ptr2->next;
+        ProcessPlan *lst = Hash[i];
+
+        for ( ; lst; lst = lst->next)
+        {   
+            int processplanID = lst->ProcessPlanID; 
+
+            OperationsLst *ptr = lst->first;
+        
+            if(ptr)
+            {
+                while (ptr) 
+                {
+                    SubOperations *ptr2 = ptr->first;
+                    while (ptr2) 
+                    {
+                        fprintf(file,"%d,%d,%d,%d\n",processplanID ,ptr->numOperation, ptr2->numMachine, ptr2->time);
+                        ptr2 = ptr2->next;
+                    }
+                    ptr = ptr->next;
+                }
+            }
         }
-	    ptr = ptr->next;
     }
-    
     msg->type = true;
     strcpy(msg->message, "O fecheiro foi criado e preenchido com sucesso. ");
     fclose(file);
     return 1;
-}*/
+}
