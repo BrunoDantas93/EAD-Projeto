@@ -43,11 +43,11 @@ ProcessPlan *newOperation(Message *msg)
  * @return Operations* 
  */
 ProcessPlan *Operations_List(ProcessPlan *lst, Message *msg, int numOperations)
-{
-    
+{    
     if(!lst->last)
     {
-        lst->first = lst->last = insertOperation(lst->last, msg, numOperations);
+        lst->first = lst->last = insertOperation(lst->last, msg, numOperations);  
+        lst->TotalOperation++;
     }
     else
     {
@@ -59,13 +59,15 @@ ProcessPlan *Operations_List(ProcessPlan *lst, Message *msg, int numOperations)
         {
             cell->next = lst->first;
             lst->first = cell;
-            lst->first->next->prev = cell;                    
+            lst->first->next->prev = cell;  
+            lst->TotalOperation++;                  
         }
         else if(lst->last->numOperation < numOperations)
         {            
             cell->prev = lst->last;
             lst->last->next = cell;
-            lst->last = cell;
+            lst->last = cell;  
+            lst->TotalOperation++;
         }
         else if(lst->last->numOperation > numOperations && lst->first->numOperation < numOperations)
         { 
@@ -77,7 +79,8 @@ ProcessPlan *Operations_List(ProcessPlan *lst, Message *msg, int numOperations)
                 temp->prev->next = cell;
                 cell->prev = temp->prev;
                 temp->prev = cell;
-                cell->next = temp;
+                cell->next = temp;  
+                lst->TotalOperation++;
             }            
         }
     }

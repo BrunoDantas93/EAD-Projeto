@@ -25,26 +25,11 @@
 
 int main()
 {
-    InitializeComponent();
-    /*ProcessPlan **Hash = calloc(msg->M, sizeof(ProcessPlan*));
-    
-    filesRead(Hash, msg, "src/data/processplan2.txt");
+    UINT CPAGE_UTF8 = 65001; 
+    UINT CPAGE_DEFAULT = GetConsoleOutputCP();
+    SetConsoleOutputCP(CPAGE_UTF8);
+	
+    InitializeComponent(); 
 
-    time(&end);
-    time_t elapsed = end - begin;
-    
-    
-    printf("Time measured: %ld seconds.\n", elapsed);
-
-    stats(Hash, msg);
-
-    for (int i = 0; i < msg->M; i++)
-    {
-        printf("--------%d--------\n", (*(Hash+i))->ProcessPlanID);
-        list_queue(*(Hash+i));
-        printf("------------------\n");
-    }*/
-    
-    system("pause");
-    return 0;
+    SetConsoleOutputCP(CPAGE_DEFAULT);	
 }

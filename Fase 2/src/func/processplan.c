@@ -72,6 +72,7 @@ ProcessPlan *insert_list(ProcessPlan *lst, Message *msg, int processplanID)
         return NULL;
     }
     cell->ProcessPlanID = processplanID;
+    cell->TotalOperation = 0;
     cell->next = lst;
     cell->first = NULL;
     cell->last = NULL;
@@ -164,5 +165,6 @@ int hash_remove(ProcessPlan **Hash, Message *msg, int processplanID)
     sprintf (c, "%d", processplanID);
     int pos = MagicNumber(msg, c);
     *(Hash+pos) = ProcessPlan_remove(Hash[pos], msg, processplanID);
+    return 0;
 }
 

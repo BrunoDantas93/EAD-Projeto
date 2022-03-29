@@ -142,6 +142,10 @@ void InitializeComponent()
                 ChangeOperation(Hash, msg);
                 break;
 
+            case 7:
+                calculateProcessPan(Hash, msg);
+                break;
+
     
         }
     }while(disable == false);
@@ -459,6 +463,99 @@ int ChangeOperation(ProcessPlan **Hash, Message *msg)
     return 0;
 }
 
+/**
+ * @brief Get the Order List object
+ * 
+ * @param lst List with all the data
+ * @param orderedlist array to save order list
+ * @return int 
+ */
+int GetOrderList(ProcessPlan *lst, OperationsLst *orderedlist[])
+{
+    OperationsLst *ptr = lst->first;
+    //OperationsLst *orderedlist[lst->TotalOperation];
+    int count = 0;
+    for( ; ptr; ptr = ptr->next)
+    {  
+        orderedlist[count] = ptr;
+        count++;
+    }
+    
+    for(int i = 0; i < lst->TotalOperation; i++)
+    {
+        for(int j = 0; j < lst->TotalOperation; j++)
+        {
+            if(orderedlist[j]->TotalSubOperation < orderedlist[i]->TotalSubOperation )
+            {
+                OperationsLst *aux = orderedlist[i];
+                orderedlist[i] = orderedlist[j];
+                orderedlist[j] = aux;
+            }
+        }
+    }
+    return 0;
+}
+
+/**
+ * @brief 
+ * 
+ * @param Hash List with all of operations to calculate the best time
+ * @param msg Variable to display the response menssage to the users
+ * @return int 
+ */
+int calculateProcessPan(ProcessPlan **Hash, Message *msg)
+{
+    int numProcesPlan = readInt("\n\t\tQual é o número do Process Plan: ","\n\t\t [ERROR] Qual é o número número do Process Plan: ");
+    ProcessPlan *lst = exists_in_hash(Hash, msg, numProcesPlan);
+    if(msg->type != false)
+    {
+        OperationsLst *orderedlist[lst->TotalOperation]; 
+        GetOrderList(lst, orderedlist);
+
+        for(int i = 0; i < lst->TotalOperation; i++)
+        {
+            printf("%d -> %d\n",orderedlist[i]->numOperation, orderedlist[i]->TotalSubOperation);
+        }
+
+        
+
+
+
+
+        /*OperationsLst *ptr = lst->first;
+        //printf("\n%d\n",lst->TotalOperation);
+        SubOperations *bestTime[lst->TotalOperation];
+        int count = 0;
+
+        for( ; ptr; ptr = ptr->next)
+        {
+            if(count == 0)
+            {
+                bestTime[count] = ptr->first;
+            }
+            else
+            {  
+                
+                //Verificar se a maquina ja esta em uso.
+                //se nao estiver adicionar
+                //se estiver valtar a fazer o mesmo.
+
+
+                //bestTime[count] = ptr->first;
+            }
+
+            count++;
+        }*/
+
+        
+    }   
+    //ProcessPlan bestTime;
+    ReturnMenu();
+    return 0;
+}
+
+
+
 
 
 int length(ProcessPlan *lst) {
@@ -514,4 +611,3 @@ void trash(ProcessPlan **Hash, Message *msg)
         
     }
 }
-

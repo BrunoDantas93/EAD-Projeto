@@ -191,7 +191,7 @@ int filesRead(ProcessPlan **Hash, Message *msg, char *filename)
 
         }
         ProcessPlan *lst = exists_in_hash(Hash, msg, processplanID);
-        
+        //lst->TotalOperation++;
         Operations_List(lst, msg, numOperation);
         CheckOperations(lst, msg, numOperation, numMachine, time);
         
