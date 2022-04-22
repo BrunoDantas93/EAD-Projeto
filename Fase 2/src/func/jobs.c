@@ -14,25 +14,76 @@
 #include <string.h>
 #include "../lib/processplan.h"
 #include "../lib/jobs.h"
+#include "../lib/menu.h"
+#include "../lib/mainf.h"
 
 /**
- * @brief
+ * @brief 
  * 
+ * @param lst list where we will store the data
  * @param msg variable for the message type and its corresponding messages
+ * @param ProcessPlan_Operation operation identifier
  * @return Operations* 
  */
-ProcessPlan *newOperation(Message *msg)
+ProcessPlan *newOperation(ProcessPlan *lst, Message *msg, int ProcessPlan_Operation)
 {
-    ProcessPlan *new = (ProcessPlan *)malloc(sizeof(ProcessPlan));
+    Operations *new = (Operations *)malloc(sizeof(Operations));
+    
     if(!new)
     {
         msg->type = false;
         strcpy(msg->message, "Ocorreu um erro");
         return NULL;
     }
+    new->ProcessPlan_Operations = ProcessPlan_Operation;
     new->first = new->last = NULL;
-    return new;
+    new->TotalOperation = 0; 
+    
+    new->next = lst->first;
+    lst->first = new;
+    lst->totalProcesses++;
+    return lst;
 }
+
+
+/**
+ * @brief  Checks if the value exists within the list
+ * 
+ * @param lst list where we will store the data
+ * @param msg variable for the message type and its corresponding messages
+ * @param processplanID process plan identifier
+ * @return ProcessPlan* 
+ */
+Operations * exists_in_list2(Operations *lst, Message *msg, int ProcessPlan_Operations) 
+{
+    bool found = false;
+    while(lst)
+    {
+        if (lst->ProcessPlan_Operations == ProcessPlan_Operations)
+        { 
+            found = true; 
+            break;
+        }
+        lst = lst->next;
+    }
+    
+    msg->type = found;
+    if(msg->type == false)
+    { 
+        char c[1000];
+        sprintf(c, "Não process plan ID = %d não existe.", ProcessPlan_Operations);
+        strcpy(msg->message, c);
+        return NULL;
+    }
+    else
+    {
+        char c[1000];
+        sprintf(c, "O process id %d foi encontrado com sucesso.", ProcessPlan_Operations);
+        strcpy(msg->message, c);
+        return lst;
+    }
+}
+
 
 /**
  * @brief This function looks for the position to insert the new operation identifier in the list in order from smallest to largest
@@ -42,11 +93,11 @@ ProcessPlan *newOperation(Message *msg)
  * @param numOperations operation identifier
  * @return Operations* 
  */
-ProcessPlan *Operations_List(ProcessPlan *lst, Message *msg, int numOperations)
-{    
+Operations *Operations_List(Operations *lst, Message *msg, int numOperations)
+{
     if(!lst->last)
     {
-        lst->first = lst->last = insertOperation(lst->last, msg, numOperations);  
+        lst->first = lst->last = insertOperation(lst->last, msg, numOperations);
         lst->TotalOperation++;
     }
     else
@@ -54,23 +105,23 @@ ProcessPlan *Operations_List(ProcessPlan *lst, Message *msg, int numOperations)
         OperationsLst *cell = NULL;
         cell = insertOperation(cell, msg, numOperations);
         if(cell == false){return NULL;}   
-
+        
         if(lst->first->numOperation > numOperations)
         {
             cell->next = lst->first;
             lst->first = cell;
-            lst->first->next->prev = cell;  
-            lst->TotalOperation++;                  
+            lst->first->next->prev = cell;      
+            lst->TotalOperation++;              
         }
         else if(lst->last->numOperation < numOperations)
         {            
             cell->prev = lst->last;
             lst->last->next = cell;
-            lst->last = cell;  
+            lst->last = cell;
             lst->TotalOperation++;
         }
         else if(lst->last->numOperation > numOperations && lst->first->numOperation < numOperations)
-        { 
+        {             
             OperationsLst *temp = lst->first;
             for( ;temp && temp->numOperation <= numOperations; temp = temp->next){}
             
@@ -79,7 +130,7 @@ ProcessPlan *Operations_List(ProcessPlan *lst, Message *msg, int numOperations)
                 temp->prev->next = cell;
                 cell->prev = temp->prev;
                 temp->prev = cell;
-                cell->next = temp;  
+                cell->next = temp;
                 lst->TotalOperation++;
             }            
         }
@@ -127,15 +178,17 @@ OperationsLst *insertOperation(OperationsLst *lst, Message *msg, int numOperatio
  * @param time time to complete the operation
  * @return Operations* 
  */
-ProcessPlan *CheckOperations(ProcessPlan *lst, Message *msg, int numOperation, int numMachine, int time)
+Operations *CheckOperations(Operations *lst, Message *msg, int numOperation, int numMachine, int time)
 {
    if(lst->first->numOperation == numOperation)
    {
        lst->first = InsertSubOperation(lst->first, msg, numMachine, time);
+       lst->first->TotalSubOperation++;
    }
    else if(lst->last->numOperation == numOperation)
    {
        lst->last = InsertSubOperation(lst->last, msg, numMachine, time);
+       lst->last->TotalSubOperation++;
    }
    else
    {
@@ -155,6 +208,7 @@ ProcessPlan *CheckOperations(ProcessPlan *lst, Message *msg, int numOperation, i
        else
        {
             aux = InsertSubOperation(aux, msg, numMachine, time);
+            aux->TotalSubOperation++;
        }
    }
    return lst;
@@ -172,7 +226,6 @@ ProcessPlan *CheckOperations(ProcessPlan *lst, Message *msg, int numOperation, i
  */
 OperationsLst *InsertSubOperation(OperationsLst *lst, Message *msg, int numMachine, int time)
 {   
-   lst->TotalSubOperation++;
    if(!lst->last)
    {
        lst->first = lst->last = addSubOperations(lst->last, msg, numMachine, time);
@@ -229,13 +282,13 @@ SubOperations *addSubOperations(SubOperations *lst, Message *msg, int numMachine
     }
     cell->numMachine = numMachine;
     cell->time = time;
+    cell->tested = false;
     
     cell->next = NULL;
     cell->prev = lst;
     if (cell->prev) {
         cell->prev->next = cell;
     }   
-   
     return cell;
 }
 
@@ -247,7 +300,7 @@ SubOperations *addSubOperations(SubOperations *lst, Message *msg, int numMachine
  * @param element Element to be removed from the list
  * @return Operations* 
  */
-ProcessPlan *OperationsRemove(ProcessPlan *lst, Message *msg, int element)
+Operations *OperationsRemove(Operations *lst, Message *msg, int element)
 {
     if(lst->first->numOperation == element)
     {
@@ -277,6 +330,7 @@ ProcessPlan *OperationsRemove(ProcessPlan *lst, Message *msg, int element)
         }
         aux->prev->next = aux->next;
         aux->next->prev = aux->prev;
+        free(aux);
     }
     msg->type = true;
     char str[1000];
@@ -291,7 +345,7 @@ ProcessPlan *OperationsRemove(ProcessPlan *lst, Message *msg, int element)
  * @param ptr list where we will store the data 
  * @return Operations* 
  */
-ProcessPlan *RearrangeElements(ProcessPlan *ptr)
+Operations *RearrangeElements(Operations *ptr)
 {
     OperationsLst *lst = ptr->first;
     if(lst->first->numMachine == -930 && lst->first->time == -930)
@@ -322,8 +376,10 @@ ProcessPlan *RearrangeElements(ProcessPlan *ptr)
         }
         aux->prev->next = aux->next;
         aux->next->prev = aux->prev;
+        free(aux);
     }
     return ptr;
+
 }
 
 /**
@@ -332,7 +388,7 @@ ProcessPlan *RearrangeElements(ProcessPlan *ptr)
  * @param lst list where we will store the data
  * @param msg variable for the message type and its corresponding messages
  */
-void MinimumTimeUnits(ProcessPlan *lst, Message *msg)
+void MinimumTimeUnits(Operations *lst, Message *msg)
 {
     OperationsLst *ptr = lst->first;
     if(ptr)
@@ -348,6 +404,7 @@ void MinimumTimeUnits(ProcessPlan *lst, Message *msg)
     {
         strcpy(msg->message, "Não tem dados na lista para serem porcessados.");
     }
+    free(ptr);
 }
 
 /**
@@ -356,7 +413,7 @@ void MinimumTimeUnits(ProcessPlan *lst, Message *msg)
  * @param lst list where we will store the data
  * @param msg variable for the message type and its corresponding messages
  */
-void MaximumTimeUnits(ProcessPlan *lst, Message *msg)
+void MaximumTimeUnits(Operations *lst, Message *msg)
 {
     OperationsLst *ptr = lst->first;
     if(ptr)
@@ -372,6 +429,7 @@ void MaximumTimeUnits(ProcessPlan *lst, Message *msg)
     {
         strcpy(msg->message, "Não tem dados na lista para serem porcessados.");
     }
+    free(ptr);
 }
 
 /**
@@ -380,28 +438,36 @@ void MaximumTimeUnits(ProcessPlan *lst, Message *msg)
  * @param lst list where we will store the data
  * @param msg variable for the message type and its corresponding messages
  */
-void AverageTimeUnits(ProcessPlan *lst, Message *msg)
+void AverageTimeUnits(Operations *lst, Message *msg)
 {
     OperationsLst *ptr = lst->first;
     if(ptr)
     {
-        int TotalTime = 0, count = 0;
+        strcpy(msg->message, "");
         for(; ptr; ptr = ptr->next ) 
         { 
+            int TotalTime = 0, count = 0;
             SubOperations *ptr2 = ptr->first; 
             for( ; ptr2; ptr2 = ptr2->next)
             {
                 TotalTime += ptr2->time;
                 count++;  
-            } 
+            }
+            if(strcmp(msg->message, "") == 0)
+            {
+                sprintf(msg->message, "O tempo médio possível da operação %d é: %d/%d = %d   |", ptr->numOperation, TotalTime, count, TotalTime/count);
+            }   
+            else         
+            {
+                sprintf(msg->message, "%s\n\t\t| O tempo médio possível da operação %d é: %d/%d = %d   |", msg->message, ptr->numOperation, TotalTime, count, TotalTime/count);
+            }   
+            free(ptr2);
         }
         msg->type = true;
-        char str[80];
-        sprintf(str, "O tempo médio possível e: %d/%d = %d\n", TotalTime, count, TotalTime/count);
-        strcpy(msg->message, str);
     }
     else
     {
         strcpy(msg->message, "Não tem dados na lista para serem porcessados.");
     }
+    free(ptr);
 }

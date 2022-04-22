@@ -18,9 +18,9 @@
 typedef struct _ProcessPlan
 {
     int ProcessPlanID;  /** Number: plan process identifier  */
-    int TotalOperation;
+    int totalProcesses; /** Number of */
     struct _ProcessPlan *next; /** Next process plan */
-    struct _OperationsLst *first, *last;
+    struct _Operations *first;
     
 }ProcessPlan;
 

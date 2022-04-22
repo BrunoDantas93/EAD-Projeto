@@ -14,6 +14,8 @@
 #ifndef mainf
 #define mainf
 
+
+
 /**
  * @brief hello 
  * 
@@ -101,7 +103,7 @@ void stats(ProcessPlan **hash, Message *msg);
 
 int length(ProcessPlan *lst);
 
-void list_queue(ProcessPlan *q);
+void list_queue(Operations *q);
 void list_queue2(SubOperations *ptr);
 void trash(ProcessPlan **Hash, Message *msg);
 #endif

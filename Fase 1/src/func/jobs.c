@@ -44,8 +44,7 @@ Operations *newOperation(Message *msg)
  * @return Operations* 
  */
 Operations *Operations_List(Operations *lst, Message *msg, int numOperations)
-{
-    
+{    
     if(!lst->last)
     {
         lst->first = lst->last = insertOperation(lst->last, msg, numOperations);
@@ -232,7 +231,6 @@ SubOperations *addSubOperations(SubOperations *lst, Message *msg, int numMachine
     if (cell->prev) {
         cell->prev->next = cell;
     }   
-   
     return cell;
 }
 
@@ -274,6 +272,7 @@ Operations *OperationsRemove(Operations *lst, Message *msg, int element)
         }
         aux->prev->next = aux->next;
         aux->next->prev = aux->prev;
+        free(aux);
     }
     msg->type = true;
     char str[1000];
@@ -319,8 +318,10 @@ Operations *RearrangeElements(Operations *ptr)
         }
         aux->prev->next = aux->next;
         aux->next->prev = aux->prev;
+        free(aux);
     }
     return ptr;
+
 }
 
 /**
@@ -345,6 +346,7 @@ void MinimumTimeUnits(Operations *lst, Message *msg)
     {
         strcpy(msg->message, "Não tem dados na lista para serem porcessados.");
     }
+    free(ptr);
 }
 
 /**
@@ -369,6 +371,7 @@ void MaximumTimeUnits(Operations *lst, Message *msg)
     {
         strcpy(msg->message, "Não tem dados na lista para serem porcessados.");
     }
+    free(ptr);
 }
 
 /**
@@ -382,23 +385,31 @@ void AverageTimeUnits(Operations *lst, Message *msg)
     OperationsLst *ptr = lst->first;
     if(ptr)
     {
-        int TotalTime = 0, count = 0;
+        strcpy(msg->message, "");
         for(; ptr; ptr = ptr->next ) 
         { 
+            int TotalTime = 0, count = 0;
             SubOperations *ptr2 = ptr->first; 
             for( ; ptr2; ptr2 = ptr2->next)
             {
                 TotalTime += ptr2->time;
                 count++;  
-            } 
+            }
+            if(strcmp(msg->message, "") == 0)
+            {
+                sprintf(msg->message, "O tempo médio possível da operação %d é: %d/%d = %d   |", ptr->numOperation, TotalTime, count, TotalTime/count);
+            }   
+            else         
+            {
+                sprintf(msg->message, "%s\n\t\t| O tempo médio possível da operação %d é: %d/%d = %d   |", msg->message, ptr->numOperation, TotalTime, count, TotalTime/count);
+            }   
+            free(ptr2);
         }
         msg->type = true;
-        char str[80];
-        sprintf(str, "O tempo médio possível e: %d/%d = %d\n", TotalTime, count, TotalTime/count);
-        strcpy(msg->message, str);
     }
     else
     {
         strcpy(msg->message, "Não tem dados na lista para serem porcessados.");
     }
+    free(ptr);
 }

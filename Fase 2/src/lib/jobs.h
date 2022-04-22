@@ -21,6 +21,7 @@ typedef struct _SubOperations
 {
     int numMachine; /** Number: Identifier of the machine*/
     int time; /** Number: Time oro complete the operation */
+    bool tested;
     struct _SubOperations *prev, *next; /** SubOperations: pointers to the next and previous element in the list */
 
 }SubOperations;
@@ -40,12 +41,37 @@ typedef struct _OperationsLst
 }OperationsLst;
 
 /**
- * @brief
+ * @brief This structure is auxiliary to the Operations structure, its function is to store the pointer to the first and last element of the List
  * 
+ */
+typedef struct _Operations
+{
+    int ProcessPlan_Operations; /** Number: */
+    int TotalOperation; /** Number: */
+    struct _Operations *next; /**  */
+    struct _OperationsLst *first, *last; /** OperationsLst: Pointer to the first and last element of the list */
+}Operations;
+
+/**
+ * @brief 
+ * 
+ * @param lst list where we will store the data
  * @param msg variable for the message type and its corresponding messages
+ * @param ProcessPlan_Operation operation identifier
  * @return Operations* 
  */
-ProcessPlan *newOperation(Message *msg);
+ProcessPlan *newOperation(ProcessPlan *lst, Message *msg, int ProcessPlan_Operation);
+
+
+/**
+ * @brief  Checks if the value exists within the list
+ * 
+ * @param lst list where we will store the data
+ * @param msg variable for the message type and its corresponding messages
+ * @param processplanID process plan identifier
+ * @return ProcessPlan* 
+ */
+Operations * exists_in_list2(Operations *lst, Message *msg, int ProcessPlan_Operations);
 
 /**
  * @brief This function looks for the position to insert the new operation identifier in the list in order from smallest to largest
@@ -55,7 +81,7 @@ ProcessPlan *newOperation(Message *msg);
  * @param numOperations operation identifier
  * @return Operations* 
  */
-ProcessPlan *Operations_List(ProcessPlan *lst, Message *msg, int numOperations);
+Operations *Operations_List(Operations *lst, Message *msg, int numOperations);
 
 /**
  * @brief This function inserts new operation identifiers.
@@ -77,7 +103,7 @@ OperationsLst *insertOperation(OperationsLst *lst, Message *msg, int numOperatio
  * @param time time to complete the operation
  * @return Operations* 
  */
-ProcessPlan *CheckOperations(ProcessPlan *lst, Message *msg, int numOperation, int numMachine, int time);
+Operations *CheckOperations(Operations *lst, Message *msg, int numOperation, int numMachine, int time);
 
 /**
  * @brief This function looks for the position to insert the new alternatives in the list in order 
@@ -110,7 +136,7 @@ SubOperations *addSubOperations(SubOperations *lst, Message *msg, int numMachine
  * @param element Element to be removed from the list
  * @return Operations* 
  */
-ProcessPlan *OperationsRemove(ProcessPlan *lst, Message *msg, int element);
+Operations *OperationsRemove(Operations *lst, Message *msg, int element);
 
 /**
  * @brief Remove the element that was changed to be able to sort the list in an orderly way
@@ -118,7 +144,7 @@ ProcessPlan *OperationsRemove(ProcessPlan *lst, Message *msg, int element);
  * @param ptr list where we will store the data 
  * @return Operations* 
  */
-ProcessPlan *RearrangeElements(ProcessPlan *lst);
+Operations *RearrangeElements(Operations *lst);
 
 /**
  * @brief Determines the minimum amount of time units needed to complete the job
@@ -126,7 +152,7 @@ ProcessPlan *RearrangeElements(ProcessPlan *lst);
  * @param lst list where we will store the data
  * @param msg variable for the message type and its corresponding messages
  */
-void MinimumTimeUnits(ProcessPlan *lst, Message *msg);
+void MinimumTimeUnits(Operations *lst, Message *msg);
 
 /**
  * @brief Determines maximum amount of time units needed to complete the job
@@ -134,7 +160,7 @@ void MinimumTimeUnits(ProcessPlan *lst, Message *msg);
  * @param lst list where we will store the data
  * @param msg variable for the message type and its corresponding messages
  */
-void MaximumTimeUnits(ProcessPlan *lst, Message *msg);
+void MaximumTimeUnits(Operations *lst, Message *msg);
 
 /**
  * @brief Determines the average amount of time units required to complete an operation,
@@ -142,7 +168,6 @@ void MaximumTimeUnits(ProcessPlan *lst, Message *msg);
  * @param lst list where we will store the data
  * @param msg variable for the message type and its corresponding messages
  */
-void AverageTimeUnits(ProcessPlan *lst, Message *msg);
-
+void AverageTimeUnits(Operations *lst, Message *msg);
 
 #endif

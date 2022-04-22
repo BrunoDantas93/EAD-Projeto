@@ -65,17 +65,16 @@ void insert_hash(ProcessPlan **hash, Message *msg, int processplanID)
 ProcessPlan *insert_list(ProcessPlan *lst, Message *msg, int processplanID)
 {
     ProcessPlan *cell = malloc(sizeof(ProcessPlan));
-     if(!cell)
+    if(!cell)
     {
         msg->type = false;
         strcpy(msg->message, "Ocorreu um erro");
         return NULL;
     }
     cell->ProcessPlanID = processplanID;
-    cell->TotalOperation = 0;
+    cell->totalProcesses = 0;
     cell->next = lst;
     cell->first = NULL;
-    cell->last = NULL;
     return cell;
 }
 

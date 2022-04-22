@@ -154,46 +154,50 @@ int filesRead(ProcessPlan **Hash, Message *msg, char *filename)
 
     fseek(file, 0, SEEK_SET);
 
-    int processplanArr[msg->S];
     int lines = 0;
 
 
     while (!feof(file)) 
     {
         char string[1000];
-    	int processplanID,numOperation, numMachine, time;
+    	int processplanID, processPlan_operation, numOperation, numMachine, time;
 	    fgets(string, 1000, file);
-        sscanf(string, "%d,%d,%d,%d", &processplanID, &numOperation, &numMachine, &time); 
+        sscanf(string, "%d,%d,%d,%d,%d", &processplanID, &processPlan_operation, &numOperation, &numMachine, &time); 
         
         if(lines == 0)
         {
-            processplanArr[lines] = processplanID;
-            lines++;
-            insert_hash(Hash, msg, processplanID);  
+            insert_hash(Hash, msg, processplanID); 
+            lines++;           
         }
         else
         {
-            bool found = false;
-            for (int i = 0; i < lines; i++)
-            {
-                if(processplanID == processplanArr[i])
-                {
-                    found = true;
-                }
-            }
-             
-            if(found == false)
-            {    
-                insert_hash(Hash, msg, processplanID); 
-                processplanArr[lines] = processplanID;
-                lines++;
+            ProcessPlan *lst = exists_in_hash(Hash, msg, processplanID);
+            
+            if(msg->type == false)
+            {  
+                insert_hash(Hash, msg, processplanID);
+                msg->type = true;
             } 
 
         }
+
         ProcessPlan *lst = exists_in_hash(Hash, msg, processplanID);
-        //lst->TotalOperation++;
-        Operations_List(lst, msg, numOperation);
-        CheckOperations(lst, msg, numOperation, numMachine, time);
+
+        if(lst->first == NULL)
+        {
+            newOperation(lst, msg, processPlan_operation);
+        }         
+        
+        Operations *op = exists_in_list2(lst->first, msg, processPlan_operation);
+        
+        if(msg->type == false)
+        {    
+            newOperation(lst, msg, processPlan_operation);
+            msg->type = true;
+            op = exists_in_list2(lst->first, msg, processPlan_operation);
+        }            
+        Operations_List(op, msg, numOperation);
+        CheckOperations(op, msg, numOperation, numMachine, time);
         
         if(msg->type == false)
         {
@@ -237,19 +241,23 @@ int filesWrite(ProcessPlan **Hash, Message *msg, char *filename)
         {   
             int processplanID = lst->ProcessPlanID; 
 
-            OperationsLst *ptr = lst->first;
-        
-            if(ptr)
+            Operations *ptr = lst->first;
+            for ( ; ptr; ptr = ptr->next)
             {
-                while (ptr) 
+                OperationsLst *ptr2 = ptr->first;
+        
+                if(ptr2)
                 {
-                    SubOperations *ptr2 = ptr->first;
                     while (ptr2) 
                     {
-                        fprintf(file,"%d,%d,%d,%d\n",processplanID ,ptr->numOperation, ptr2->numMachine, ptr2->time);
+                        SubOperations *ptr3 = ptr2->first;
+                        while (ptr3) 
+                        {
+                            fprintf(file,"%d,%d,%d,%d,%d\n",processplanID, ptr->ProcessPlan_Operations ,ptr2->numOperation, ptr3->numMachine, ptr3->time);
+                            ptr3 = ptr3->next;
+                        }
                         ptr2 = ptr2->next;
                     }
-                    ptr = ptr->next;
                 }
             }
         }

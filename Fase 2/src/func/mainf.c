@@ -17,6 +17,7 @@
 #include <time.h>
 #include "../lib/processplan.h"
 #include "../lib/jobs.h"
+#include "../lib/escalation.h"
 #include "../lib/mainf.h"
 #include "../lib/menu.h"
 #include "../lib/files.h"
@@ -103,6 +104,20 @@ void InitializeComponent()
         }
     }while(disable == false);
 
+
+    stats(Hash, msg);
+    system("pause");
+    trash(Hash, msg);
+    system("pause");
+    ProcessPlan *lst = exists_in_hash(Hash, msg, 1);
+    MapProcessPlan(lst, msg);
+    if(msg->type == false)
+    {
+        DisplayMessage(strcat(msg->message, " |"));        
+
+        ReturnMenu();
+    }
+    system("pause");
     disable = false; 
     do
     {
@@ -131,7 +146,7 @@ void InitializeComponent()
                 break;
             
             case 4:
-                InsertOp(Hash, msg);
+                //InsertOp(Hash, msg);
                 break;
 
             case 5:
@@ -143,7 +158,7 @@ void InitializeComponent()
                 break;
 
             case 7:
-                calculateProcessPan(Hash, msg);
+                //calculateProcessPan(Hash, msg);
                 break;
 
     
@@ -210,7 +225,7 @@ ProcessPlan ** FilesInterpreter(ProcessPlan **Hash, Message *msg, int type)
  * @param Hash list all the process plan
  * @param msg  Variable to display the response menssage to the users
  * @return int 
- */
+ */ 
 int newProcessPlan(ProcessPlan **Hash, Message *msg)
 {
     DisplayMessage("Inserir um novo process plan.");
@@ -272,7 +287,7 @@ int removeProcessPlan(ProcessPlan **Hash, Message *msg)
  * @param msg Variable to display the response menssage to the users
  * @return Operations* 
  */
-int InsertOp(ProcessPlan **Hash, Message *msg)
+/*int InsertOp(ProcessPlan **Hash, Message *msg)
 {
     int numProcesPlan = readInt("\n\t\tQual é o número do Process Plan: ","\n\t\t [ERROR] Qual é o número número do Process Plan: ");
     ProcessPlan *lst = exists_in_hash(Hash, msg, numProcesPlan);
@@ -343,7 +358,7 @@ int InsertOp(ProcessPlan **Hash, Message *msg)
     }
 
     return 1;
-}
+}*/
 
 /**
  * @brief This operation gives the user the option to delete an entire job from the list
@@ -469,7 +484,7 @@ int ChangeOperation(ProcessPlan **Hash, Message *msg)
  * @param lst List with all the data
  * @param orderedlist array to save order list
  * @return int 
- */
+ */ /*
 int GetOrderList(ProcessPlan *lst, OperationsLst *orderedlist[])
 {
     OperationsLst *ptr = lst->first;
@@ -494,7 +509,7 @@ int GetOrderList(ProcessPlan *lst, OperationsLst *orderedlist[])
         }
     }
     return 0;
-}
+}*/
 
 /**
  * @brief 
@@ -503,7 +518,7 @@ int GetOrderList(ProcessPlan *lst, OperationsLst *orderedlist[])
  * @param msg Variable to display the response menssage to the users
  * @return int 
  */
-int calculateProcessPan(ProcessPlan **Hash, Message *msg)
+/*int calculateProcessPan(ProcessPlan **Hash, Message *msg)
 {
     int numProcesPlan = readInt("\n\t\tQual é o número do Process Plan: ","\n\t\t [ERROR] Qual é o número número do Process Plan: ");
     ProcessPlan *lst = exists_in_hash(Hash, msg, numProcesPlan);
@@ -545,14 +560,14 @@ int calculateProcessPan(ProcessPlan **Hash, Message *msg)
             }
 
             count++;
-        }*/
+        }
 
         
     }   
     //ProcessPlan bestTime;
     ReturnMenu();
     return 0;
-}
+}*/
 
 
 
@@ -585,10 +600,10 @@ void list_queue2(SubOperations *ptr) {
 }
 
 
-void list_queue(ProcessPlan *q) {
+void list_queue(Operations *q) {
     OperationsLst *ptr = q->first;
     while (ptr) {
-        printf("%d: %d\n", ptr->numOperation, ptr->TotalSubOperation);
+        printf("\t%d -> %d\n", ptr->numOperation, ptr->TotalSubOperation);
 		list_queue2(ptr->first);
         ptr = ptr->next;
     }
@@ -596,18 +611,22 @@ void list_queue(ProcessPlan *q) {
 
 void trash(ProcessPlan **Hash, Message *msg)
 {
-
     for (int i = 0; i < msg->M; i++)
     {
         ProcessPlan *lst = Hash[i];
         for ( ; lst; lst = lst->next)
         {
-            printf("--------%d--------\n", lst->ProcessPlanID);
-            if(lst->first != NULL)
-                list_queue(lst);
-            printf("------------------\n");
-            
-        }
-        
+            printf("--------%d  -> %d--------\n", lst->ProcessPlanID, lst->totalProcesses);
+                Operations *ptr = lst->first;
+                while (ptr)
+                {
+                    printf("\t--------%d : %d--------\n", ptr->ProcessPlan_Operations, ptr->TotalOperation);
+                        if(ptr->first != NULL)
+                            list_queue(ptr); 
+                    printf("\t------------------\n");
+                    ptr = ptr->next;
+                }
+            printf("------------------\n");  
+        }    
     }
 }

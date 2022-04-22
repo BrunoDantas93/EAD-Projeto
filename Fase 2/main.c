@@ -18,6 +18,7 @@
 #include <string.h>
 #include "src/lib/processplan.h"
 #include "src/lib/jobs.h"
+#include "src/lib/escalation.h"
 #include "src/lib/files.h"
 #include "src/lib/mainf.h"
 #include "src/lib/menu.h"
