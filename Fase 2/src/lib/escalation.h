@@ -15,68 +15,56 @@
 #define escalation
 
 /**
- * @brief 
- * 
+ * @brief This structure will store the data of the calculations of a scheduling proposal.
+ *  
  */
-/*typedef struct _auxList
-{
-    int operationID;
-    int machine;
-    int time;
-    OperationsLst *list;
-    ProcessPlan *pList;
-    struct _auxList *next;
-
-} AuxList;
-typedef struct _MapOperation{
-    int aa;
-} MapOperation;
-
-typedef struct _MapProcessPlan{
-    int ProcessPlan;
-    int steps;
-} MapProcessPlan;
-
-typedef struct _MapAux{
-    int machine;
-    int time;
-    OperationsLst *oLst;
-    SubOperations *subOp;
-}MapAux;*/
-
-//MapAux * tst(MapAux **aux, OperationsLst *lst, Message *msg, int stepCount);
-
-//int dijkstra(ProcessPlan *lst, Message *msg, int target);
 typedef struct _MapOperations{
-    int Operations_ProcessPlanID;
-    int OperationID;
-    SubOperations *first;
-    struct _MapOperations *next;
+    int jobID; /** Number: Identifier of the job*/
+    int OperationID; /** Number: Identifier of the operation*/
+    bool tested;
+    SubOperations *first; /**SubOperations: Pointer to first element of the operation*/
+    SubOperations *position; /**SubOperations: Pointer to the actual element of the operation*/
+    SubOperations *selected; /**SubOperations: Pointer to the selected element of the operation */
+    struct _MapOperations *next; /** _MapOperations: Pointer to the next element of the list*/
 } MapOp;
 
-typedef struct _MapPath{
-    int Operations_ProcessPlanID;
-    int OperationID;
-    SubOperations *Subnext;
-    struct _MapPath *next;
-} MapPath;
+/**
+ * @brief This operation gives to the program o number max of operations
+ * 
+ * @param lst list with all the data 
+ * @return max* 
+ */
+int MaxOperation(ProcessPlan *lst);
 
+/**
+ * @brief This operation verify if the jobid is in the list.
+ * 
+ * @param lst list with all the data 
+ * @param msg list with the date to display to the user
+ * @param ProcessPlan_Operations list with all the data 
+ * @return boolean 
+ */
+int existInList(MapOp *lst, Message *msg, int ProcessPlan_Operations);
 
-typedef struct _MapProcessPlan{
-    int ProcessPlanID;
-    int numSteps;
-    int totalOperations;
-    MapOp *ptr;
-    MapPath *start;
-} MapPP;
+/**
+ * @brief This operation verify if the machine is not in use on the map.
+ * 
+ * @param cell list with all the data 
+ * @param msg list with the date to display to the user
+ * @param machineid number that identifies the machine 
+ * @param jobid number that identifies the job
+ * @return boolean 
+ */
+MapOp *CheckMachine(MapOp *cell, Message *msg, int machineid, int jobid);
 
-
-
-void MapProcessPlan(ProcessPlan *lst, Message *msg);
-
-
-
-
+/**
+ * @brief This operation verify if the machine is not in use on the map.
+ * 
+ * @param lst list with all the data 
+ * @param msg list with the date to display to the user
+ * @return the map 
+ */
+int MapProcessPlan(ProcessPlan *lst, Message *msg);
 
 
 #endif

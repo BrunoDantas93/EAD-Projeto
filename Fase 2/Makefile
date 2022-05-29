@@ -14,7 +14,6 @@ CC = gcc
 
 CC_FLAGS = -c         \
            -W         \
-           -Wall      \
            -pedantic
 
 RM  =  del /Q /S *.o *~ *.exe

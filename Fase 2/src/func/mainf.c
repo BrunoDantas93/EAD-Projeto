@@ -104,20 +104,6 @@ void InitializeComponent()
         }
     }while(disable == false);
 
-
-    stats(Hash, msg);
-    system("pause");
-    trash(Hash, msg);
-    system("pause");
-    ProcessPlan *lst = exists_in_hash(Hash, msg, 1);
-    MapProcessPlan(lst, msg);
-    if(msg->type == false)
-    {
-        DisplayMessage(strcat(msg->message, " |"));        
-
-        ReturnMenu();
-    }
-    system("pause");
     disable = false; 
     do
     {
@@ -146,7 +132,7 @@ void InitializeComponent()
                 break;
             
             case 4:
-                //InsertOp(Hash, msg);
+                InsertOp(Hash, msg);
                 break;
 
             case 5:
@@ -158,10 +144,13 @@ void InitializeComponent()
                 break;
 
             case 7:
-                //calculateProcessPan(Hash, msg);
+                CalculateProcessPlan(Hash, msg);
                 break;
 
-    
+            case 8:
+                stats(Hash, msg);
+                ReturnMenu();
+                break;    
         }
     }while(disable == false);
 }
@@ -287,22 +276,33 @@ int removeProcessPlan(ProcessPlan **Hash, Message *msg)
  * @param msg Variable to display the response menssage to the users
  * @return Operations* 
  */
-/*int InsertOp(ProcessPlan **Hash, Message *msg)
+int InsertOp(ProcessPlan **Hash, Message *msg)
 {
     int numProcesPlan = readInt("\n\t\tQual é o número do Process Plan: ","\n\t\t [ERROR] Qual é o número número do Process Plan: ");
     ProcessPlan *lst = exists_in_hash(Hash, msg, numProcesPlan);
     if(msg->type != false)
     {
+        int numJob = readInt("\n\t\tQual é o número do Job: ","\n\t\t [ERROR] Qual é o número número do Job: ");
+        
+        Operations *op = exists_in_list2(lst->first, msg, numJob);
+        if(msg->type == false)
+        {    
+            //verificar maquina e verificar o tempo
+            newOperation(lst, msg, numJob);
+            msg->type = true;
+            op = exists_in_list2(lst->first, msg, numJob);
+        }            
+
         DisplayMessage("Inserir um nova Operação e novas Sub-Operações");
         int numOperation = readInt("\n\t\tQual é o número da Operação: ","\n\t\t [ERROR] Qual é o número da Operação: ");
         OperationsLst *aux = NULL;
         bool disable = false;
         do{
             system("cls");
-            if(lst->first)
+            if(op->first)
             {
-                lst = Operations_List(lst, msg, numOperation);
-                OperationsLst *aux2 = lst->first;
+                op = Operations_List(op, msg, numOperation);
+                OperationsLst *aux2 = op->first;
                 
                 while (aux2)
                 {
@@ -316,8 +316,8 @@ int removeProcessPlan(ProcessPlan **Hash, Message *msg)
             }
             else
             {
-                lst = Operations_List(lst, msg, numOperation);
-                aux = lst->first;
+                op = Operations_List(op, msg, numOperation);
+                aux = op->first;
             }
 
             if(msg->type == false){ disable = true; break;}   
@@ -338,7 +338,7 @@ int removeProcessPlan(ProcessPlan **Hash, Message *msg)
             int numMachine = readInt("\n\t\tQual é o número da Máquina: ","\n\t\t [ERROR] Qual é o número da Máquina: ");
             int time = readInt("\n\t\tQual é a duração da operação: ","\n\t\t [ERROR] Qual é a duração da operação: ");
 
-            lst = CheckOperations(lst, msg, numOperation, numMachine, time);
+            op = CheckOperations(op, msg, numOperation, numMachine, time);
 
             if(msg->type == false)
             { disable = true; break;}
@@ -350,7 +350,6 @@ int removeProcessPlan(ProcessPlan **Hash, Message *msg)
         }while (disable == false);
     }   
     
-    
     if(msg->type == false)
     {
         DisplayMessage(strcat(msg->message, " |"));
@@ -358,7 +357,7 @@ int removeProcessPlan(ProcessPlan **Hash, Message *msg)
     }
 
     return 1;
-}*/
+}
 
 /**
  * @brief This operation gives the user the option to delete an entire job from the list
@@ -376,12 +375,22 @@ int DeleteOperation(ProcessPlan **Hash, Message *msg)
         DisplayMessage("Escolha o número de operação que pertende apagar.");
         if(lst->first)
         {
-            int element = DisplayOperations(lst, "\n\t\tQual e o elemento que pertende apagar: ", "[ERROR] Qual e o elemento que pertende apagar: ");
-            
-            lst = OperationsRemove(lst, msg, element);
+            int numJob = readInt("\n\t\tQual é o número do Job: ","\n\t\t [ERROR] Qual é o número número do Job: ");
+        
+            Operations *op = exists_in_list2(lst->first, msg, numJob);
+            if(msg->type == false)
+            {    
+                //verificar maquina e verificar o tempo
+        
+                DisplayMessage("Não existe nenhum elemento para apagar.");
+            }         
+            else{
+                int element = DisplayOperations(op, "\n\t\tQual e o elemento que pertende apagar: ", "[ERROR] Qual e o elemento que pertende apagar: ");
+                
+                op = OperationsRemove(op, msg, element);
 
-            DisplayMessage(msg->message);
-
+                DisplayMessage(msg->message);
+            }
         }   
         else
         {
@@ -416,57 +425,71 @@ int ChangeOperation(ProcessPlan **Hash, Message *msg)
         DisplayMessage("Escolha o número de operação que pertende alterar.");
         if(lst->first)
         {
-            int elementOp = DisplayOperations(lst, "\n\t\tQual e o elemento que pertende apagar: ", "[ERROR] Qual e o elemento que pertende apagar: ");
-            
-            OperationsLst *ptr = lst->first;
-            while (ptr)
-            {
-                if(ptr->numOperation == elementOp){break;}
-                ptr = ptr->next;
-            }
 
-            SubOperations *element = DisplaySubOperationsChoice(ptr, "\n\t\tQual e o elemento que pertende alterar: ", "[ERROR] Qual e o elemento que pertende alterar: ");
+            int numJob = readInt("\n\t\tQual é o número do Job: ","\n\t\t [ERROR] Qual é o número número do Job: ");
+        
+            Operations *op = exists_in_list2(lst->first, msg, numJob);
+            if(msg->type == false)
+            {    
+                //verificar maquina e verificar o tempo
+        
+                DisplayMessage("Não existe nenhum elemento para apagar.");
+            }         
+            else{
 
-            int choice = SubOperationsChoice();
 
-            int numMachine;
-            int time; 
-            switch (choice)
-            {
-                case 0:;
-                    numMachine = readInt("\n\t\tQual é o número da Máquina: ","\n\t\t [ERROR] Qual é o número da Máquina: ");
-                    element->numMachine = numMachine;
-                    strcpy(msg->message,"O número da máquina foi alterado com sucesso.");
-                    break;
-
-                case 1:;
-                    time = readInt("\n\t\tQual é a duração da operação: ","\n\t\t [ERROR] Qual é a duração da operação: ");
-                    numMachine = element->numMachine;
-                    element->numMachine = -930;
-                    element->time = -930;
-                    lst = RearrangeElements(lst);
-                    lst = CheckOperations(lst, msg, elementOp, numMachine, time);
-                    if (msg->type == true)
-                    {
-                        strcpy(msg->message, "A operação foi alterada com sucesso.");
-                    }                
-                    break;
+                int elementOp = DisplayOperations(op, "\n\t\tQual e o elemento que pertende apagar: ", "[ERROR] Qual e o elemento que pertende apagar: ");
                 
-                case 2:;
-                    numMachine = readInt("\n\t\tQual é o número da Máquina: ","\n\t\t [ERROR] Qual é o número da Máquina: ");
-                    time = readInt("\n\t\tQual é a duração da operação: ","\n\t\t [ERROR] Qual é a duração da operação: ");
-                    element->numMachine = -930;
-                    element->time = -930;
-                    lst = RearrangeElements(lst);
-                    lst = CheckOperations(lst, msg, elementOp, numMachine, time);
-                    if (msg->type == true)
-                    {
-                        strcpy(msg->message, "A operação foi alterada com sucesso.");
-                    }
-                    break;
-            }
+                OperationsLst *ptr = op->first;
+                while (ptr)
+                {
+                    if(ptr->numOperation == elementOp){break;}
+                    ptr = ptr->next;
+                }
 
-            DisplayMessage(msg->message);
+                SubOperations *element = DisplaySubOperationsChoice(ptr, "\n\t\tQual e o elemento que pertende alterar: ", "[ERROR] Qual e o elemento que pertende alterar: ");
+
+                int choice = SubOperationsChoice();
+
+                int numMachine;
+                int time; 
+                switch (choice)
+                {
+                    case 0:;
+                        numMachine = readInt("\n\t\tQual é o número da Máquina: ","\n\t\t [ERROR] Qual é o número da Máquina: ");
+                        element->numMachine = numMachine;
+                        strcpy(msg->message,"O número da máquina foi alterado com sucesso.");
+                        break;
+
+                    case 1:;
+                        time = readInt("\n\t\tQual é a duração da operação: ","\n\t\t [ERROR] Qual é a duração da operação: ");
+                        numMachine = element->numMachine;
+                        element->numMachine = -930;
+                        element->time = -930;
+                        op = RearrangeElements(op);
+                        op = CheckOperations(op, msg, elementOp, numMachine, time);
+                        if (msg->type == true)
+                        {
+                            strcpy(msg->message, "A operação foi alterada com sucesso.");
+                        }                
+                        break;
+                    
+                    case 2:;
+                        numMachine = readInt("\n\t\tQual é o número da Máquina: ","\n\t\t [ERROR] Qual é o número da Máquina: ");
+                        time = readInt("\n\t\tQual é a duração da operação: ","\n\t\t [ERROR] Qual é a duração da operação: ");
+                        element->numMachine = -930;
+                        element->time = -930;
+                        op = RearrangeElements(op);
+                        op = CheckOperations(op, msg, elementOp, numMachine, time);
+                        if (msg->type == true)
+                        {
+                            strcpy(msg->message, "A operação foi alterada com sucesso.");
+                        }
+                        break;
+                }
+
+                DisplayMessage(msg->message);
+            }
         }   
         else
         {
@@ -479,98 +502,32 @@ int ChangeOperation(ProcessPlan **Hash, Message *msg)
 }
 
 /**
- * @brief Get the Order List object
+ * @brief This operation gives the user the option to change a given data of an operation
  * 
- * @param lst List with all the data
- * @param orderedlist array to save order list
- * @return int 
- */ /*
-int GetOrderList(ProcessPlan *lst, OperationsLst *orderedlist[])
-{
-    OperationsLst *ptr = lst->first;
-    //OperationsLst *orderedlist[lst->TotalOperation];
-    int count = 0;
-    for( ; ptr; ptr = ptr->next)
-    {  
-        orderedlist[count] = ptr;
-        count++;
-    }
-    
-    for(int i = 0; i < lst->TotalOperation; i++)
-    {
-        for(int j = 0; j < lst->TotalOperation; j++)
-        {
-            if(orderedlist[j]->TotalSubOperation < orderedlist[i]->TotalSubOperation )
-            {
-                OperationsLst *aux = orderedlist[i];
-                orderedlist[i] = orderedlist[j];
-                orderedlist[j] = aux;
-            }
-        }
-    }
-    return 0;
-}*/
-
-/**
- * @brief 
- * 
- * @param Hash List with all of operations to calculate the best time
+ * @param Hash list with all the data 
  * @param msg Variable to display the response menssage to the users
- * @return int 
+ * @return Operations* 
  */
-/*int calculateProcessPan(ProcessPlan **Hash, Message *msg)
-{
+int CalculateProcessPlan(ProcessPlan **Hash, Message *msg){
     int numProcesPlan = readInt("\n\t\tQual é o número do Process Plan: ","\n\t\t [ERROR] Qual é o número número do Process Plan: ");
     ProcessPlan *lst = exists_in_hash(Hash, msg, numProcesPlan);
     if(msg->type != false)
     {
-        OperationsLst *orderedlist[lst->TotalOperation]; 
-        GetOrderList(lst, orderedlist);
-
-        for(int i = 0; i < lst->TotalOperation; i++)
+        int a = MapProcessPlan(lst, msg);
+        if(a >= 0)
         {
-            printf("%d -> %d\n",orderedlist[i]->numOperation, orderedlist[i]->TotalSubOperation);
+            DisplayMessage(strcat(msg->message, " |"));        
+
+            ReturnMenu();
         }
-
-        
-
-
-
-
-        /*OperationsLst *ptr = lst->first;
-        //printf("\n%d\n",lst->TotalOperation);
-        SubOperations *bestTime[lst->TotalOperation];
-        int count = 0;
-
-        for( ; ptr; ptr = ptr->next)
-        {
-            if(count == 0)
-            {
-                bestTime[count] = ptr->first;
-            }
-            else
-            {  
-                
-                //Verificar se a maquina ja esta em uso.
-                //se nao estiver adicionar
-                //se estiver valtar a fazer o mesmo.
-
-
-                //bestTime[count] = ptr->first;
-            }
-
-            count++;
-        }
-
-        
-    }   
-    //ProcessPlan bestTime;
+        DisplayMessage("Não foi possível criar o process plan.");
+    }
+    else{
+        DisplayMessage("Não existe nenhum elemento para calcular");
+    }
     ReturnMenu();
     return 0;
-}*/
-
-
-
+}
 
 
 int length(ProcessPlan *lst) {
@@ -589,7 +546,9 @@ void stats(ProcessPlan **hash, Message *msg) {
         if (l < min) min = l;
         tot += l;
     }
-    printf("Hash: %d Total: %d Min: %d Max: %d Med: %.2f\n", msg->M, tot, min, max, (float)tot / msg->M);
+    char str[100];
+    sprintf(str, "Hash: %d Total: %d Min: %d Max: %d Med: %.2f", msg->M, tot, min, max, (float)tot / msg->M);
+    DisplayMessage(str); 
 }
 
 void list_queue2(SubOperations *ptr) {

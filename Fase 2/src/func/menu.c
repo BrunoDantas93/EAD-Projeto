@@ -60,6 +60,8 @@ int Menu()
     printf("\n\t\t| [4] -> Inserção de uma nova operação.                                                        |");
     printf("\n\t\t| [5] -> Remoção de uma determinada operação.                                                        |");
     printf("\n\t\t| [6] -> Editar de uma determinada operação.                                                        |");
+    printf("\n\t\t| [7] -> Calculate process plan.                                                        |");
+    printf("\n\t\t| [9] -> Hash table status.                                                        |");
    printf("\n\t\t+---------------------------------------------------------------------------------------------------------------------------+");
     
     choice = readInt("\n\t\tEscolha uma opção: -> ","\n\t\t[Erro] Escolha uma opção: -> ");

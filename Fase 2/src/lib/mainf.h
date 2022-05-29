@@ -99,6 +99,22 @@ int DeleteOperation(ProcessPlan **Hash, Message *msg);
  */
 int ChangeOperation(ProcessPlan **Hash, Message *msg);
 
+/**
+ * @brief This operation gives the user the option to change a given data of an operation
+ * 
+ * @param Hash list with all the data 
+ * @param msg Variable to display the response menssage to the users
+ * @return Operations* 
+ */
+int CalculateProcessPlan(ProcessPlan **Hash, Message *msg);
+
+/**
+ * @brief This operation display all array stats
+ * 
+ * @param Hash list with all the data 
+ * @param msg Variable to display the response menssage to the users
+ * @return Operations* 
+ */
 void stats(ProcessPlan **hash, Message *msg);
 
 int length(ProcessPlan *lst);

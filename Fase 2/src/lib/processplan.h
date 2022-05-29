@@ -21,7 +21,7 @@ typedef struct _ProcessPlan
     int totalProcesses; /** Number of */
     struct _ProcessPlan *next; /** Next process plan */
     struct _Operations *first;
-    
+
 }ProcessPlan;
 
 /**

@@ -35,6 +35,7 @@ ProcessPlan *newOperation(ProcessPlan *lst, Message *msg, int ProcessPlan_Operat
         strcpy(msg->message, "Ocorreu um erro");
         return NULL;
     }
+    
     new->ProcessPlan_Operations = ProcessPlan_Operation;
     new->first = new->last = NULL;
     new->TotalOperation = 0; 

@@ -192,6 +192,7 @@ int filesRead(ProcessPlan **Hash, Message *msg, char *filename)
         
         if(msg->type == false)
         {    
+            //verificar maquina e verificar o tempo
             newOperation(lst, msg, processPlan_operation);
             msg->type = true;
             op = exists_in_list2(lst->first, msg, processPlan_operation);
